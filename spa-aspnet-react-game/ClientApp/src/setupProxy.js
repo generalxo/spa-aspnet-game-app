@@ -5,12 +5,13 @@ const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_H
   env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'http://localhost:39040';
 
 const context = [
-  "/_configuration",
-  "/.well-known",
-  "/Identity",
-  "/connect",
-  "/ApplyDatabaseMigrations",
-  "/_framework"
+    "/_configuration",
+    "/.well-known",
+    "/Identity",
+    "/connect",
+    "/ApplyDatabaseMigrations",
+    "/_framework",
+    "/api"
 ];
 
 const onError = (err, req, resp, target) => {
@@ -18,19 +19,19 @@ const onError = (err, req, resp, target) => {
 }
 
 module.exports = function (app) {
-  const appProxy = createProxyMiddleware(context, {
-    proxyTimeout: 10000,
-    target: target,
-    // Handle errors to prevent the proxy middleware from crashing when
-    // the ASP NET Core webserver is unavailable
-    onError: onError,
-    secure: false,
-    // Uncomment this line to add support for proxying websockets
-    //ws: true, 
-    headers: {
-      Connection: 'Keep-Alive'
-    }
-  });
+    const appProxy = createProxyMiddleware(context, {
+        proxyTimeout: 10000,
+        target: target,
+        // Handle errors to prevent the proxy middleware from crashing when
+        // the ASP NET Core webserver is unavailable
+        onError: onError,
+        secure: false,
+        // Uncomment this line to add support for proxying websockets
+        //ws: true, 
+        headers: {
+            Connection: 'Keep-Alive'
+        }
+    });
 
-  app.use(appProxy);
+    app.use(appProxy);
 };
