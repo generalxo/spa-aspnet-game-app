@@ -1,5 +1,17 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification\
 for details on configuring this project to bundle and minify static web assets. */
+*, *::after, *::before {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
 
 a.navbar-brand {
   white-space: normal;
@@ -32,17 +44,16 @@ a {
   outline: black auto 1px;
 }
 
-html {
-  font-size: 14px;
-}
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+.home-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 100vw;
 }
 
 .container {
-  max-width: 960px;
+  max-width: 100%;
 }
 
 .pricing-header {
@@ -68,11 +79,14 @@ button.accept-policy {
 html {
   position: relative;
   min-height: 100%;
+  min-width: 100vw;
 }
 
 body {
   margin-bottom: 60px;
+  width: 100%;
 }
+
 .footer {
   position: absolute;
   bottom: 0;
