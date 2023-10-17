@@ -1,7 +1,10 @@
-﻿import React from 'react';
+﻿import { useState, createContext } from 'react';
 import styled from 'styled-components';
 import Board from './Board';
 import Keyboard from './Keyboard';
+import { boardMatrix } from './Helper';
+
+export const GameContext = createContext();
 
 const GameWrapper = styled.div`
     display: flex;
@@ -21,14 +24,19 @@ const StyledH1 = styled.h1`
     font-weight: bold;
 `;
 
+
 const Game = () => {
+    const [board, setBoard] = useState(boardMatrix)
+
     return (
         <GameWrapper>
             <StyledH1>Wordle</StyledH1>
-            <Board />
-            <Keyboard />
+            <GameContext.Provider value={{ board, setBoard }}>
+                <Board />
+                <Keyboard />
+            </GameContext.Provider>
         </GameWrapper>
     );
-}
+};
 
 export default Game;

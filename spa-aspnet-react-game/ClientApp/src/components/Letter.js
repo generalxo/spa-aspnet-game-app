@@ -1,5 +1,6 @@
-﻿import React from 'react';
+﻿import React, { useContext } from 'react';
 import styled from 'styled-components';
+import { GameContext } from './Game';
 
 const StyledLetter = styled.div`
     display: flex;
@@ -8,7 +9,7 @@ const StyledLetter = styled.div`
     justify-content: center;
     background-color: #2b2b2b;
     color: #f3f3f3;
-    margin: .3rem;
+    margin: 0.3rem;
     padding: 0;
     font-size: 2.1rem;
     font-weight: bold;
@@ -16,11 +17,13 @@ const StyledLetter = styled.div`
     height: 70px;
 `;
 
-const Letter = () => {
+const Letter = ({ position, attempt }) => {
+
+    const { board } = useContext(GameContext);
+    const letter = board[attempt][position];
+
     return (
-        <StyledLetter>
-            
-        </StyledLetter>
+        <StyledLetter>{letter}</StyledLetter>
     );
 };
 
