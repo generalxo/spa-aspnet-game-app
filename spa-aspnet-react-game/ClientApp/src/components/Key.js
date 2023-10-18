@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
+import { GameContext } from './Helper';
 
 const KeyWrapper = styled.div`
     display: flex;
@@ -32,19 +33,24 @@ const BigKeyWrapper = styled(KeyWrapper)`
     }
 `;
 
-const onLetterClick = (props) => {
-    console.log(props.target.innerHTML);
-};
+const Key = ({ letter }) => {
+    const { onSelectLetter, onDeleteLetter, onEnterLetter } =
+        useContext(GameContext); // get our functions from the context
 
-const Key = (props) => {
-    if (props.letter.length > 1) {
-        return (
-            <BigKeyWrapper onClick={onLetterClick}>
-                {props.letter}
-            </BigKeyWrapper>
-        );
+    const HandleKeyClick = () => {
+        if (letter === 'DELETE') {
+            onDeleteLetter();
+        } else if (letter === 'ENTER') {
+            onEnterLetter();
+        } else {
+            onSelectLetter(letter);
+        }
+    };
+
+    if (letter.length > 1) {
+        return <BigKeyWrapper onClick={HandleKeyClick}>{letter}</BigKeyWrapper>;
     } else {
-        return <KeyWrapper onClick={onLetterClick}>{props.letter}</KeyWrapper>;
+        return <KeyWrapper onClick={HandleKeyClick}>{letter}</KeyWrapper>;
     }
 };
 

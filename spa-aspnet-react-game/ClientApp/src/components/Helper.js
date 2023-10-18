@@ -1,8 +1,12 @@
+import { createContext } from 'react';
+
 export const boardMatrix = [
-    ["", "", "W", "", ""],
-    ["", "", "O", "", ""],
-    ["", "", "R", "", ""],
-    ["", "", "D", "", ""],
-    ["", "", "L", "", ""],
-    ["", "", "E", "", ""],
+    ['', '', '', '', ''],
+    ['', '', '', '', ''],
+    ['', '', '', '', ''],
+    ['', '', '', '', ''],
+    ['', '', '', '', ''],
+    ['', '', '', '', ''],
 ];
+
+export const GameContext = createContext(); // Context object for sharing state between board and keyboard components

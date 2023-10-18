@@ -1,6 +1,6 @@
 ﻿import React, { useContext } from 'react';
 import styled from 'styled-components';
-import { GameContext } from './Game';
+import { GameContext } from './Helper';
 
 const StyledLetter = styled.div`
     display: flex;
@@ -17,11 +17,12 @@ const StyledLetter = styled.div`
     height: 70px;
 `;
 
-const Letter = ({ position, attempt }) => {
+const Letter = ({ position, row }) => {
 
-    const { board } = useContext(GameContext);
-    const letter = board[attempt][position];
+    const { board, CorrectWord } = useContext(GameContext); // board is a 6x5 matrix of letters
+    const letter = board[row][position];
 
+    
     return (
         <StyledLetter>{letter}</StyledLetter>
     );

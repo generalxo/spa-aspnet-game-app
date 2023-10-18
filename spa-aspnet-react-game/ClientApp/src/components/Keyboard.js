@@ -16,26 +16,27 @@ const KeyboardRow = styled.div`
     justify-content: center;
 `;
 
+
 const Keyboard = () => {
     const keyboardRow1 = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'];
     const keyboardRow2 = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'];
-    const keyboardRow3 = ['DELETE', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'ENTER'];
+    const keyboardRow3 = ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'DELETE'];
 
     return (
         <KeyboardWrapper>
             <KeyboardRow>
                 {keyboardRow1.map((letter) => (
-                    <Key id={letter} key={letter} letter={letter} />
+                    <Key key={letter} letter={letter} />
                 ))}
             </KeyboardRow>
             <KeyboardRow>
                 {keyboardRow2.map((letter) => (
-                    <Key id={letter} key={letter} letter={letter} />
+                    <Key key={letter} letter={letter} />
                 ))}
             </KeyboardRow>
             <KeyboardRow>
                 {keyboardRow3.map((letter) => (
-                    <Key id={letter} key={letter} letter={letter} />
+                    <Key key={letter} letter={letter} />
                 ))}
             </KeyboardRow>
         </KeyboardWrapper>
