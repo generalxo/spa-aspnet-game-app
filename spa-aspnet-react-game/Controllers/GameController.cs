@@ -11,10 +11,13 @@ namespace spa_aspnet_react_game.Controllers
         [HttpPost("newgame")]
         public WordViewModel NewGame()
         {
-            WordViewModel word = new WordViewModel();
-            word.Word = "WATER";
+            //We want to get a user here and then create a new game for that user in the database and then return a word
+
+            WordViewModel word = new()
+            {
+                Word = "WATER"
+            };
             return word;
         }
-
     }
 }

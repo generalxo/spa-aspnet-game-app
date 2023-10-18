@@ -32,7 +32,7 @@ const Game = () => {
 
     useEffect(() => {
         fetch('api/game/newgame', {
-            method: 'POST'
+            method: 'POST',
         })
             .then((result) => {
                 return result.json();
@@ -40,44 +40,8 @@ const Game = () => {
             .then((data) => {
                 //console.log(data.word);
                 setCorrectWord(data.word);
-            })
+            });
     }, []);
-    
-
-    const onSelectLetter = (letter) => {
-        if (currentAttempt.letterPosition > 4) return; // if we're at the end of the board, do nothing
-
-        const newBoard = [...board];
-        newBoard[currentAttempt.row][currentAttempt.letterPosition] = letter;
-        setBoard(newBoard);
-        setCurrentAttempt({
-            ...currentAttempt,
-            letterPosition: currentAttempt.letterPosition + 1,
-        });
-    };
-    const onDeleteLetter = () => {
-        if (currentAttempt.letterPosition === 0) {
-        } // Do nothing
-        else {
-            const newBoard = [...board];
-            newBoard[currentAttempt.row][currentAttempt.letterPosition - 1] =
-                ''; //letterPosition -1 beacuse we are already on the next letter
-            setBoard(newBoard);
-            setCurrentAttempt({
-                ...currentAttempt,
-                letterPosition: currentAttempt.letterPosition - 1,
-            });
-        }
-    };
-    const onEnterLetter = () => {
-        if (currentAttempt.letterPosition !== 5) return;
-        else {
-            setCurrentAttempt({
-                row: currentAttempt.row + 1,
-                letterPosition: 0,
-            });
-        }
-    };
 
     return (
         <GameWrapper>
@@ -88,9 +52,6 @@ const Game = () => {
                     setBoard,
                     currentAttempt,
                     setCurrentAttempt,
-                    onSelectLetter,
-                    onDeleteLetter,
-                    onEnterLetter,
                     CorrectWord,
                 }}
             >
