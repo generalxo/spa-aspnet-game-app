@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { GameContext } from './Helper';
 
@@ -43,6 +43,8 @@ const Key = ({ letter }) => {
         setCurrentAttempt,
         gameOver,
         setGameOver,
+        wordFound,
+        setWordFound,
     } = useContext(GameContext);
 
     const HandleKeyClick = () => {
@@ -54,8 +56,8 @@ const Key = ({ letter }) => {
                     Guesses: board,
                     CurrentAttemptRow: currentAttempt.row,
                     IsGameOver: gameOver,
+                    IsWordFound: wordFound,
                 };
-                console.log(JSON.stringify(dataToSend));
                 const checkword = async () => {
                     const response = await fetch('api/game/checkword', {
                         method: 'POST',
@@ -67,6 +69,7 @@ const Key = ({ letter }) => {
                     const data = await response.json();
                     const newBoard = data.guesses;
                     const isGameOver = data.isGameOver;
+                    const isWordFound = data.isWordFound;
                     console.log(isGameOver);
                     setBoard(newBoard);
                     setCurrentAttempt({
@@ -74,6 +77,7 @@ const Key = ({ letter }) => {
                         column: 0,
                     });
                     setGameOver(isGameOver);
+                    setWordFound(isWordFound);
                 };
                 checkword();
             }

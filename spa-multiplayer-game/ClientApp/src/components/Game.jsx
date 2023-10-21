@@ -26,6 +26,7 @@ const Game = () => {
     const [board, setBoard] = useState(boardMatrix);
     const [currentAttempt, setCurrentAttempt] = useState({ row: 0, column: 0 });
     const [gameOver, setGameOver] = useState(false);
+    const [wordFound, setWordFound] = useState(false);
 
     return (
         <GameWrapper>
@@ -37,6 +38,8 @@ const Game = () => {
                     setCurrentAttempt,
                     gameOver,
                     setGameOver,
+                    wordFound,
+                    setWordFound,
                 }}
             >
                 <StyledH1>Wordle</StyledH1>

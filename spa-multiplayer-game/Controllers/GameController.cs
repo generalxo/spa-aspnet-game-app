@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using spa_multiplayer_game.Helpers;
 using spa_multiplayer_game.Models.ViewModels;
 
 namespace spa_multiplayer_game.Controllers
@@ -11,28 +12,18 @@ namespace spa_multiplayer_game.Controllers
         [HttpPost("checkword")]
         public GuessViewModel Guess([FromBody] GuessViewModel userGuess)
         {
-            string correctWord = "WATER";
-            string userWord = "";
+            GameHelper gameHelper = new();
+            string correctWord = "WATER"; // TODO: Get this from the database
 
-            for (int i = 0; i < userGuess.Guesses[userGuess.CurrentAttemptRow].Length; i++)
+            userGuess = gameHelper.CheckWord(userGuess, correctWord);
+            string guessedWord = gameHelper.JoinWord(userGuess);
+
+            if (guessedWord == correctWord)
             {
-                if (userGuess.Guesses[userGuess.CurrentAttemptRow][i].Letter == correctWord[i].ToString())
-                {
-                    userGuess.Guesses[userGuess.CurrentAttemptRow][i].LetterState = "correct";
-                }
-                else if (correctWord.Contains(userGuess.Guesses[userGuess.CurrentAttemptRow][i].Letter))
-                {
-                    userGuess.Guesses[userGuess.CurrentAttemptRow][i].LetterState = "almost";
-                }
-                else
-                {
-                    userGuess.Guesses[userGuess.CurrentAttemptRow][i].LetterState = "wrong";
-                }
+                userGuess.IsWordFound = true;
+                userGuess.IsGameOver = true;
             }
-
-            userWord = string.Join("", userGuess.Guesses[userGuess.CurrentAttemptRow].Select(x => x.Letter));
-            Console.WriteLine(userWord);
-            if (userWord == correctWord)
+            if (userGuess.CurrentAttemptRow + 1 == 5 && userGuess.IsWordFound == false)
             {
                 userGuess.IsGameOver = true;
             }

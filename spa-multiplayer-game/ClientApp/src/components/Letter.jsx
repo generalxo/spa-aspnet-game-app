@@ -9,11 +9,11 @@ function Letter(props) {
             case 'default':
                 return '#2b2b2b';
             case 'correct':
-                return '#00ff00';
+                return '#0b9b0b';
             case 'almost':
-                return '#ffff00';
+                return '#a0a010';
             case 'wrong':
-                return '#ff0000';
+                return '#141414';
             default:
                 return '#2b2b2b';
         }
