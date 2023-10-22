@@ -13,7 +13,7 @@ function Letter(props) {
             case 'almost':
                 return '#a0a010';
             case 'wrong':
-                return '#141414';
+                return '#7e7e7e';
             default:
                 return '#2b2b2b';
         }

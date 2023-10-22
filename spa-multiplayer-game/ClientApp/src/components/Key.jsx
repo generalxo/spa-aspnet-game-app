@@ -66,18 +66,19 @@ const Key = ({ letter }) => {
                         },
                         body: JSON.stringify(dataToSend),
                     });
-                    const data = await response.json();
-                    const newBoard = data.guesses;
-                    const isGameOver = data.isGameOver;
-                    const isWordFound = data.isWordFound;
-                    console.log(isGameOver);
-                    setBoard(newBoard);
-                    setCurrentAttempt({
-                        row: (currentAttempt.row += 1),
-                        column: 0,
-                    });
-                    setGameOver(isGameOver);
-                    setWordFound(isWordFound);
+                    if (!response.ok) {
+                        console.log('Error');
+                        return;
+                    } else {
+                        const data = await response.json();
+                        setBoard(data.guesses);
+                        setCurrentAttempt({
+                            row: (currentAttempt.row += 1),
+                            column: 0,
+                        });
+                        setGameOver(data.isGameOver);
+                        setWordFound(data.isWordFound);
+                    }
                 };
                 checkword();
             }

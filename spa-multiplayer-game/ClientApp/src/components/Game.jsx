@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Board from './Board';
 import { GameContext, boardMatrix } from './Helper';
 import Keyboard from './KeyBoard';
+import GameOver from './GameOver';
 
 const GameWrapper = styled.div`
     display: flex;
@@ -44,7 +45,7 @@ const Game = () => {
             >
                 <StyledH1>Wordle</StyledH1>
                 <Board />
-                <Keyboard />
+                {gameOver ? <GameOver /> : <Keyboard />}
             </GameContext.Provider>
         </GameWrapper>
     );
