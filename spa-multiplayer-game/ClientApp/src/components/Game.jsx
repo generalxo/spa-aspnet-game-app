@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import AuthService from './api-authorization/AuthorizeService';
 import styled from 'styled-components';
 import Board from './Board';
 import { GameContext, boardMatrix } from './Helper';
@@ -28,6 +29,31 @@ const Game = () => {
     const [currentAttempt, setCurrentAttempt] = useState({ row: 0, column: 0 });
     const [gameOver, setGameOver] = useState(false);
     const [wordFound, setWordFound] = useState(false);
+    //const [newGame, setNewGame] = useState(false);
+    const [isBusy, setIsBusy] = useState(false);
+
+    useEffect(() => {
+        const FetchToken = async () => {
+            const token = await AuthService.getAccessToken();
+            // const response = await fetch('api/game/newgame', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //         Authorization: `Bearer ${token}`,
+            //     },
+            // });
+            // const data = await response.json();
+            // console.log(data);
+        };
+        FetchToken();
+    }, []);
+
+    const FetchGame = async () => {
+        isBusy = true;
+        setIsBusy(isBusy);
+
+        const response = await fetch('api/game/');
+    };
 
     return (
         <GameWrapper>

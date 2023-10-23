@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
+import AuthService from './api-authorization/AuthorizeService';
 import { GameContext } from './Helper';
 
 //Styled Components Start
@@ -58,11 +59,14 @@ const Key = ({ letter }) => {
                     IsGameOver: gameOver,
                     IsWordFound: wordFound,
                 };
+
                 const checkword = async () => {
+                    const token = await AuthService.getAccessToken();
                     const response = await fetch('api/game/checkword', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`,
                         },
                         body: JSON.stringify(dataToSend),
                     });

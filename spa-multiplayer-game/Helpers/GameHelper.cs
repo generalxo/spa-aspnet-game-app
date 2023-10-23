@@ -1,4 +1,5 @@
-﻿using spa_multiplayer_game.Models.ViewModels;
+﻿using Newtonsoft.Json;
+using spa_multiplayer_game.Models.ViewModels;
 
 namespace spa_multiplayer_game.Helpers
 {
@@ -27,6 +28,26 @@ namespace spa_multiplayer_game.Helpers
         public string JoinWord(GuessViewModel guessModel)
         {
             return string.Join("", guessModel.Guesses[guessModel.CurrentAttemptRow].Select(x => x.Letter));
+        }
+
+        public string GetWordleWordFromJson()
+        {
+            Random random = new();
+            string wordleWord;
+            string json = File.ReadAllText("Data/WordleWords-200.json");
+            if (!string.IsNullOrEmpty(json))
+            {
+                WordListModel? wordList = JsonConvert.DeserializeObject<WordListModel>(json);
+                List<string> words = wordList.Words;
+                wordleWord = words[random.Next(0, words.Count)];
+                //Console.WriteLine(wordleWord);
+                return wordleWord.ToUpper();
+            }
+            else
+            {
+                throw new Exception("Error getting data from file");
+            }
+
         }
     }
 }

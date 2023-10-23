@@ -2,7 +2,7 @@
 {
     public class GuessModel
     {
-        public string? Letter { get; set; }
-        public string? LetterState { get; set; }
+        public string? Letter { get; set; } = "";
+        public string? LetterState { get; set; } = "default";
     }
 }

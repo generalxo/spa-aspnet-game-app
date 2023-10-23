@@ -8,6 +8,6 @@ namespace spa_multiplayer_game.Models
         public string? Nickname { get; set; }
 
         // Navigation properties
-        public IEnumerable<GameModel> GameModels { get; set; }
+        public IEnumerable<GameModel> GameModel { get; set; }
     }
 }
