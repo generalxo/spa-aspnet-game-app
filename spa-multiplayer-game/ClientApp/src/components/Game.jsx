@@ -29,31 +29,46 @@ const Game = () => {
     const [currentAttempt, setCurrentAttempt] = useState({ row: 0, column: 0 });
     const [gameOver, setGameOver] = useState(false);
     const [wordFound, setWordFound] = useState(false);
-    //const [newGame, setNewGame] = useState(false);
-    const [isBusy, setIsBusy] = useState(false);
 
     useEffect(() => {
-        const FetchToken = async () => {
-            const token = await AuthService.getAccessToken();
-            // const response = await fetch('api/game/newgame', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //         Authorization: `Bearer ${token}`,
-            //     },
-            // });
-            // const data = await response.json();
-            // console.log(data);
+        const FetchGame = async () => {
+            let token = await AuthService.getAccessToken();
+            let response = await fetch('api/game/fetchactivegame', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            //console.log(response);
+            if (response.ok) {
+                const data = await response.json();
+                //console.log(data);
+                if (data.activeGameStatus === 'found active game') {
+                    setBoard(data.guesses);
+                    setCurrentAttempt({
+                        row: data.currentAttemptRow,
+                        column: 0,
+                    });
+                }
+            } else if (response.status === 404) {
+                token = await AuthService.getAccessToken();
+                response = await fetch('api/game/newgame', {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                //console.log(response);
+                if (response.ok) {
+                    setBoard(boardMatrix);
+                    setCurrentAttempt({ row: 0, column: 0 });
+                }
+            }
         };
-        FetchToken();
+        FetchGame();
     }, []);
-
-    const FetchGame = async () => {
-        isBusy = true;
-        setIsBusy(isBusy);
-
-        const response = await fetch('api/game/');
-    };
 
     return (
         <GameWrapper>

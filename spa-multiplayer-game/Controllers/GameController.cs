@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using spa_multiplayer_game.Data;
 using spa_multiplayer_game.Helpers;
@@ -24,108 +26,118 @@ namespace spa_multiplayer_game.Controllers
             _gameHelper = new GameHelper();
         }
 
+        // To Do 
+        // Add Score when game is over
         [HttpPost("checkword")]
         [Authorize]
-        public GuessViewModel Guess([FromBody] GuessViewModel userGuess)
+        public async Task<IActionResult> CheckWord([FromBody] GuessViewModel userGuess)
         {
-            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            GameModel? gameModel = _context.GameModel.FirstOrDefault(x => x.UserId == userId && x.IsGameOver == false && x.IsWordFound == false);
-            
-            string correctWord = gameModel.CorrectWord;
-
-            userGuess = _gameHelper.CheckWord(userGuess, correctWord);
-            string guessedWord = _gameHelper.JoinWord(userGuess);
-
-            //Console.WriteLine(gameHelper.GetWordleWordFromJson());
-
-            if (guessedWord == correctWord)
+            try
             {
-                userGuess.IsWordFound = true;
-                userGuess.IsGameOver = true;
+                string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized("Invalid user ID");
+                }
 
-                gameModel.IsWordFound = true;
-                gameModel.IsGameOver = true;
+                GameModel? gameModel = await _context.GameModel.FirstOrDefaultAsync(x => x.UserId == userId && x.IsGameOver == false && x.IsWordFound == false);
 
+                userGuess = _gameHelper.CheckWord(userGuess, gameModel.CorrectWord);
+                string guessedWord = _gameHelper.JoinWord(userGuess);
+
+
+                if (guessedWord == gameModel.CorrectWord)
+                {
+                    userGuess.IsWordFound = true;
+                    userGuess.IsGameOver = true;
+
+                    gameModel.IsWordFound = true;
+                    gameModel.IsGameOver = true;
+                    //create a helper that calculates score
+                }
+                if (userGuess.CurrentAttemptRow + 1 == 5 && userGuess.IsWordFound == false)
+                {
+                    userGuess.IsGameOver = true;
+                    gameModel.IsGameOver = true;
+                    // no score
+                }
+
+                gameModel.Attempts = JsonConvert.SerializeObject(userGuess.Guesses);
+
+                _context.Update(gameModel);
+                await _context.SaveChangesAsync();
+
+                return Ok(userGuess);
             }
-            if (userGuess.CurrentAttemptRow + 1 == 5 && userGuess.IsWordFound == false)
+            catch (Exception)
             {
-                userGuess.IsGameOver = true;
-
-                gameModel.IsGameOver = true;
+                return StatusCode(500, "Internal Server Error(500)");
             }
+        }
 
-            gameModel.Attempts = JsonConvert.SerializeObject(userGuess.Guesses);
 
-            _context.Update(gameModel);
-            _context.SaveChanges();
 
-            return userGuess;
+        /* Order of operations:
+         * Since we dont want to create new game when there is an active game, we first check for an active game.
+         * if an active game is found -> api will return OK with a ViewModel with game data in the body
+         * if there is no active game -> api will retutn a 404 status code -> client will send a new request to create a new game
+         */
+
+        [HttpPost("fetchactivegame")]
+        [Authorize]
+        public async Task<IActionResult> FetchActiveGame()
+        {
+            try
+            {
+                string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                
+                GameModel? game = await _context.GameModel.FirstOrDefaultAsync(x => x.UserId == userId && x.IsGameOver == false);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized();
+                }
+
+                if (game is null)
+                {
+                    return NotFound("No active game found");
+                }
+
+                FetchActiveGameViewModel fetchActiveGameViewModel = _gameHelper.GameModelToFetchActiveGameViewModel(game);
+                return Ok(fetchActiveGameViewModel);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error(500)");
+            }
         }
 
         [HttpPost("newgame")]
         [Authorize]
-        public NewGameViewModel NewGame()
+        public async Task<IActionResult> NewGame()
         {
-            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            
-            var gameId = Guid.NewGuid().ToString();
-            var wordleWord = _gameHelper.GetWordleWordFromJson();
-            GameModel gameModel = new()
+            try
             {
-                PublicId = gameId,
-                CorrectWord = wordleWord,
-                UserId = userId
-            };
-            GuessViewModel guessViewModel = new()
-            {
-                Guesses = new GuessModel[6][]
-            };
-            for (int i = 0; i < 6; i++)
-            {
-                guessViewModel.Guesses[i] = new GuessModel[5];
-                for (int j = 0; j < 5; j++)
+                string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userId))
                 {
-                    guessViewModel.Guesses[i][j] = new GuessModel();
+                    return BadRequest("Invalid user ID");
                 }
+
+                GameModel newGame = _gameHelper.CreateNewGame(userId);
+
+                await _context.GameModel.AddAsync(newGame);
+                await _context.SaveChangesAsync();
+
+                return Ok();
             }
-
-            string AttemptsJson = JsonConvert.SerializeObject(guessViewModel.Guesses);
-
-            gameModel.Attempts = AttemptsJson;
-
-            _context.GameModel.Add(gameModel);
-            //_context.SaveChanges();
-
-            NewGameViewModel newGame = new()
+            catch (Exception)
             {
-                GameId = gameId
-            };
-
-            return newGame;
+                return StatusCode(500, "Internal Server Error(500)");
+            }
         }
 
-        [HttpGet("getgame")]
-        [Authorize]
-        public GuessViewModel GetGame([FromBody] NewGameViewModel newGame)
-        {
-            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            GameModel? gameModel = _context.GameModel.FirstOrDefault(x => x.PublicId == newGame.GameId && x.UserId == userId);
-            GuessViewModel? guessViewModel = new();
-
-            if (gameModel is not null)
-            {
-                guessViewModel.Guesses = JsonConvert.DeserializeObject<GuessModel[][]>(gameModel.Attempts);
-                for(int i = 0; i < guessViewModel.Guesses.Length; i++)
-                {
-                    if (guessViewModel.Guesses[i][0].Letter == "")
-                    {
-                        guessViewModel.CurrentAttemptRow = i;
-                    }
-                }
-            }
-
-            return guessViewModel;
-        }
+        
     }
 }

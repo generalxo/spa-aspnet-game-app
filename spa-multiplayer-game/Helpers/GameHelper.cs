@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using spa_multiplayer_game.Models;
 using spa_multiplayer_game.Models.ViewModels;
 
 namespace spa_multiplayer_game.Helpers
@@ -33,21 +34,65 @@ namespace spa_multiplayer_game.Helpers
         public string GetWordleWordFromJson()
         {
             Random random = new();
-            string wordleWord;
             string json = File.ReadAllText("Data/WordleWords-200.json");
+
             if (!string.IsNullOrEmpty(json))
             {
                 WordListModel? wordList = JsonConvert.DeserializeObject<WordListModel>(json);
                 List<string> words = wordList.Words;
-                wordleWord = words[random.Next(0, words.Count)];
-                //Console.WriteLine(wordleWord);
+                string wordleWord = words[random.Next(0, words.Count)];
                 return wordleWord.ToUpper();
             }
             else
             {
                 throw new Exception("Error getting data from file");
             }
+        }
 
+        public FetchActiveGameViewModel GameModelToFetchActiveGameViewModel(GameModel gameModel)
+        {
+            FetchActiveGameViewModel fetchActiveGameViewModel = new()
+            {
+                ActiveGameStatus = "found active game",
+                Guesses = JsonConvert.DeserializeObject<GuessModel[][]>(gameModel.Attempts)
+            };
+            //Gettíng current attempt row
+            for (int i = 0; i < fetchActiveGameViewModel.Guesses.Length; i++)
+            {
+                if (string.IsNullOrEmpty(fetchActiveGameViewModel.Guesses[i][0].Letter))
+                {
+                    fetchActiveGameViewModel.CurrentAttemptRow = i;
+                    return fetchActiveGameViewModel;
+                }
+            }
+            //If we got here something went wrong.
+            throw new Exception("Error getting current attempt row");
+        }
+
+        public GameModel CreateNewGame(string userId)
+        {
+            //Creating game board
+            GuessModel[][] gameBoard = new GuessModel[6][];
+            for (int i = 0; i < gameBoard.Length; i++)
+            {
+                gameBoard[i] = new GuessModel[5];
+                for (int j = 0; j < gameBoard[i].Length; j++)
+                {
+                    gameBoard[i][j] = new GuessModel();
+                }
+            }
+
+            GameModel newGame = new()
+            {
+                PublicId = Guid.NewGuid().ToString(),
+                CorrectWord = GetWordleWordFromJson(),
+                UserId = userId,
+                Attempts = JsonConvert.SerializeObject(gameBoard),
+                IsGameOver = false,
+                IsWordFound = false
+            };
+
+            return newGame;
         }
     }
 }
