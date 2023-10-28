@@ -6,6 +6,34 @@ namespace spa_multiplayer_game.Helpers
 {
     public class GameHelper
     {
+        public int SetScore(GameModel game, GuessViewModel guess)
+        {
+            //create a helper that calculates score
+            //Score -> Switch (userGuess.CurrentAttemptRow) 
+            //gameModel.Score += Score
+            switch (guess.CurrentAttemptRow)
+            {
+                case 0:
+                    game.Score = 10;
+                    break;
+                case 1:
+                    game.Score = 7;
+                    break;
+                case 2:
+                    game.Score = 5;
+                    break;
+                case 3:
+                    game.Score = 3;
+                    break;
+                case 4:
+                    game.Score = 1;
+                    break;
+                case 5:
+                    game.Score = 0;
+                    break;
+            }
+            return game.Score;
+        }
         public GuessViewModel CheckWord(GuessViewModel guessModel, string correctWord)
         {
             for (int i = 0; i < guessModel.Guesses[guessModel.CurrentAttemptRow].Length; i++)

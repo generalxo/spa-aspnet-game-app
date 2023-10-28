@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using spa_multiplayer_game.Data;
@@ -53,7 +50,9 @@ namespace spa_multiplayer_game.Controllers
 
                     gameModel.IsWordFound = true;
                     gameModel.IsGameOver = true;
-                    //create a helper that calculates score
+
+                    gameModel.Score = _gameHelper.SetScore(gameModel, userGuess);
+
                 }
                 if (userGuess.CurrentAttemptRow + 1 == 5 && userGuess.IsWordFound == false)
                 {
@@ -90,7 +89,7 @@ namespace spa_multiplayer_game.Controllers
             try
             {
                 string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                
+
                 GameModel? game = await _context.GameModel.FirstOrDefaultAsync(x => x.UserId == userId && x.IsGameOver == false);
 
                 if (string.IsNullOrEmpty(userId))
@@ -116,13 +115,19 @@ namespace spa_multiplayer_game.Controllers
         [Authorize]
         public async Task<IActionResult> NewGame()
         {
+            // Add a check for if there is an active game
             try
             {
                 string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
                 if (string.IsNullOrEmpty(userId))
                 {
                     return BadRequest("Invalid user ID");
+                }
+
+                GameModel? game = await _context.GameModel.FirstOrDefaultAsync(x => x.UserId == userId && x.IsGameOver == false);
+                if (game is not null)
+                {
+                    return BadRequest("Active game found!");
                 }
 
                 GameModel newGame = _gameHelper.CreateNewGame(userId);
@@ -138,6 +143,6 @@ namespace spa_multiplayer_game.Controllers
             }
         }
 
-        
+
     }
 }
