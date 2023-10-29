@@ -15,11 +15,13 @@ namespace spa_multiplayer_game.Models
         [NotNull]
         public string? CorrectWord { get; set; }
 
-        public string? Attempts { get; set; }
+        public string? BoardState { get; set; }
 
         public bool IsGameOver { get; set; } = false;
         public bool IsWordFound { get; set; } = false;
         public int Score { get; set; } = 0;
+        public DateTime CreatedAt { get; set; }
+        public DateTime CompletedAt { get; set; }
 
         //Foregin key
         [ForeignKey("User")]

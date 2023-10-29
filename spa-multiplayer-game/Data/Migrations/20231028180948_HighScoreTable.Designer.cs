@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using spa_multiplayer_game.Data;
 
@@ -11,9 +12,11 @@ using spa_multiplayer_game.Data;
 namespace spa_multiplayer_game.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231028180948_HighScoreTable")]
+    partial class HighScoreTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -427,8 +430,8 @@ namespace spa_multiplayer_game.Data.Migrations
                     b.Property<int>("Score")
                         .HasColumnType("int");
 
-                    b.Property<double>("TimeToComplete")
-                        .HasColumnType("float");
+                    b.Property<int>("TimeToComplete")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()

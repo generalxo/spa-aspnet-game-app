@@ -43,7 +43,7 @@ const Game = () => {
             //console.log(response);
             if (response.ok) {
                 const data = await response.json();
-                //console.log(data);
+                //console.log(response);
                 if (data.activeGameStatus === 'found active game') {
                     setBoard(data.guesses);
                     setCurrentAttempt({

@@ -9,6 +9,7 @@ namespace spa_multiplayer_game.Data
     public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
     {
         public DbSet<GameModel> GameModel { get; set; }
+        public DbSet<HighScoreModel> HighScoreModel { get; set; }
 
         public ApplicationDbContext(DbContextOptions options, IOptions<OperationalStoreOptions> operationalStoreOptions)
             : base(options, operationalStoreOptions)

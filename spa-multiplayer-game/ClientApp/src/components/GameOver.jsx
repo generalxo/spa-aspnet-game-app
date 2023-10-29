@@ -32,7 +32,7 @@ const GameOver = () => {
             {wordFound && gameOver && (
                 <>
                     <h3>It took you {currentAttempt.row} tries</h3>
-                    <LinkToHome href='/'>Start New Game</LinkToHome>
+                    <LinkToHome href='/'>Home</LinkToHome>
                 </>
             )}
         </GameOverWrapper>

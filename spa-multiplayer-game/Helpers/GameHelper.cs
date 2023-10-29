@@ -8,9 +8,6 @@ namespace spa_multiplayer_game.Helpers
     {
         public int SetScore(GameModel game, GuessViewModel guess)
         {
-            //create a helper that calculates score
-            //Score -> Switch (userGuess.CurrentAttemptRow) 
-            //gameModel.Score += Score
             switch (guess.CurrentAttemptRow)
             {
                 case 0:
@@ -82,7 +79,7 @@ namespace spa_multiplayer_game.Helpers
             FetchActiveGameViewModel fetchActiveGameViewModel = new()
             {
                 ActiveGameStatus = "found active game",
-                Guesses = JsonConvert.DeserializeObject<GuessModel[][]>(gameModel.Attempts)
+                Guesses = JsonConvert.DeserializeObject<BoardViewModel[][]>(gameModel.BoardState)
             };
             //Gettíng current attempt row
             for (int i = 0; i < fetchActiveGameViewModel.Guesses.Length; i++)
@@ -100,13 +97,13 @@ namespace spa_multiplayer_game.Helpers
         public GameModel CreateNewGame(string userId)
         {
             //Creating game board
-            GuessModel[][] gameBoard = new GuessModel[6][];
+            BoardViewModel[][] gameBoard = new BoardViewModel[6][];
             for (int i = 0; i < gameBoard.Length; i++)
             {
-                gameBoard[i] = new GuessModel[5];
+                gameBoard[i] = new BoardViewModel[5];
                 for (int j = 0; j < gameBoard[i].Length; j++)
                 {
-                    gameBoard[i][j] = new GuessModel();
+                    gameBoard[i][j] = new BoardViewModel();
                 }
             }
 
@@ -115,9 +112,10 @@ namespace spa_multiplayer_game.Helpers
                 PublicId = Guid.NewGuid().ToString(),
                 CorrectWord = GetWordleWordFromJson(),
                 UserId = userId,
-                Attempts = JsonConvert.SerializeObject(gameBoard),
+                BoardState = JsonConvert.SerializeObject(gameBoard),
                 IsGameOver = false,
-                IsWordFound = false
+                IsWordFound = false,
+                CreatedAt = DateTime.Now
             };
 
             return newGame;

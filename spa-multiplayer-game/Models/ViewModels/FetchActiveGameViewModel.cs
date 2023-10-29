@@ -3,7 +3,7 @@
     public class FetchActiveGameViewModel
     {
         public string? ActiveGameStatus { get; set; }
-        public GuessModel[][]? Guesses { get; set; }
+        public BoardViewModel[][]? Guesses { get; set; }
         public int CurrentAttemptRow { get; set; }
     }
 }

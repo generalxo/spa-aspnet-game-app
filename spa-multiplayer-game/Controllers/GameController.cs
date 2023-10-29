@@ -8,6 +8,12 @@ using spa_multiplayer_game.Models;
 using spa_multiplayer_game.Models.ViewModels;
 using System.Security.Claims;
 
+/* PsudoCode: FetchActiveGame -> (if no active game) -> NewGame -> (else) CheckWord
+* Check if for active game. if not found return error that lets client know to to create a new game request.
+* if an active game is found -> api will return OK with a game viewmodel.
+* if there is no active game -> api will retutn a 404 status code -> client will send a new request to create a new game
+*/
+
 namespace spa_multiplayer_game.Controllers
 {
     [Route("api/game")]
@@ -16,11 +22,13 @@ namespace spa_multiplayer_game.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly GameHelper _gameHelper;
+        private readonly HighScoreHelper _highScoreHelper;
 
         public GameController(ApplicationDbContext context)
         {
             _context = context;
             _gameHelper = new GameHelper();
+            _highScoreHelper = new HighScoreHelper(context);
         }
 
         // To Do 
@@ -31,6 +39,7 @@ namespace spa_multiplayer_game.Controllers
         {
             try
             {
+                bool gameOver = false;
                 string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(userId))
                 {
@@ -50,18 +59,28 @@ namespace spa_multiplayer_game.Controllers
 
                     gameModel.IsWordFound = true;
                     gameModel.IsGameOver = true;
-
                     gameModel.Score = _gameHelper.SetScore(gameModel, userGuess);
+                    gameModel.CompletedAt = DateTime.Now;
 
+                    gameOver = true;
                 }
                 if (userGuess.CurrentAttemptRow + 1 == 5 && userGuess.IsWordFound == false)
                 {
                     userGuess.IsGameOver = true;
+
                     gameModel.IsGameOver = true;
-                    // no score
+                    gameModel.CompletedAt = DateTime.Now;
+
+                    gameOver = true;
                 }
 
-                gameModel.Attempts = JsonConvert.SerializeObject(userGuess.Guesses);
+                gameModel.BoardState = JsonConvert.SerializeObject(userGuess.Guesses);
+
+                if (gameOver)
+                {
+                    HighScoreModel newHighScore = _highScoreHelper.CreateNewHighScore(gameModel);
+                    _context.HighScoreModel.Add(newHighScore);
+                }
 
                 _context.Update(gameModel);
                 await _context.SaveChangesAsync();
@@ -74,13 +93,6 @@ namespace spa_multiplayer_game.Controllers
             }
         }
 
-
-
-        /* Order of operations:
-         * Since we dont want to create new game when there is an active game, we first check for an active game.
-         * if an active game is found -> api will return OK with a ViewModel with game data in the body
-         * if there is no active game -> api will retutn a 404 status code -> client will send a new request to create a new game
-         */
 
         [HttpPost("fetchactivegame")]
         [Authorize]
@@ -111,6 +123,7 @@ namespace spa_multiplayer_game.Controllers
             }
         }
 
+        //
         [HttpPost("newgame")]
         [Authorize]
         public async Task<IActionResult> NewGame()

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using spa_multiplayer_game.Data;
 
@@ -11,9 +12,11 @@ using spa_multiplayer_game.Data;
 namespace spa_multiplayer_game.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231028175029_DateTimeGame")]
+    partial class DateTimeGame
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -413,34 +416,6 @@ namespace spa_multiplayer_game.Data.Migrations
                     b.ToTable("GameModel");
                 });
 
-            modelBuilder.Entity("spa_multiplayer_game.Models.HighScoreModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Score")
-                        .HasColumnType("int");
-
-                    b.Property<double>("TimeToComplete")
-                        .HasColumnType("float");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("HighScoreModel");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -503,22 +478,9 @@ namespace spa_multiplayer_game.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("spa_multiplayer_game.Models.HighScoreModel", b =>
-                {
-                    b.HasOne("spa_multiplayer_game.Models.ApplicationUser", "User")
-                        .WithMany("HighScoreModel")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("spa_multiplayer_game.Models.ApplicationUser", b =>
                 {
                     b.Navigation("GameModel");
-
-                    b.Navigation("HighScoreModel");
                 });
 #pragma warning restore 612, 618
         }
